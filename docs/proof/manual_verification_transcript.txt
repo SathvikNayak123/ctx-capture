@@ -1,0 +1,36 @@
+# ctx-capture manual MCP verification — 2026-07-03T07:54:07.353913+00:00
+# subprocess: C:\Program Files\Python313\python.exe -m ctx_capture.mcp --db C:\Users\user\Desktop\ctx-capture\scratch_manual_verify.db  (real stdio transport)
+# trace_id: c3608815-adaa-4c40-b584-4dd849e09832
+
+## connect
+server: ctx-capture 1.26.0
+
+## list_tools (5)
+  - list_traces: outputSchema=yes
+  - get_step_context: outputSchema=yes
+  - diff_step_contexts: outputSchema=yes
+  - find_context_anomalies: outputSchema=yes
+  - get_token_accounting: outputSchema=yes
+
+## list_resource_templates (2)
+  - trace://{trace_id}
+  - trace://{trace_id}/step/{step_index}
+
+## browse: read_resource(trace://c3608815-adaa-4c40-b584-4dd849e09832)
+  agent_name=manual-verify-agent  step_count=15
+  step 12 summary: {'step_index': 12, 'step_id': 'b730764c-2de7-49b6-a52c-38a656c9ee0f', 'has_model_call': True, 'tool_call_count': 0, 'truncation_event_count': 0}
+
+## pull step 12's exact context: get_step_context(trace_id, step_index=12)
+  isError=False
+  provider=toy-provider  model=toy-model
+  total_message_count=14  truncated=False
+  message[0]={'role': 'system', 'content': 'You are the manual-verification test agent.'}
+  message[-1]={'role': 'assistant', 'content': 'step 11 answer', 'tool_calls': None}
+  token_counts={'prompt_tokens': 32, 'completion_tokens': 5, 'total_tokens': 37, 'cache_read_tokens': 0, 'cache_write_tokens': 0}
+
+## find_context_anomalies(trace_id)
+  - step 5: truncation (high) — tool_call:76805103-cf48-4622-a72e-12295b53f1fc truncated (unknown, detected inferred)
+  - step 5: tool_result_mismatch (high) — tool_call 76805103-cf48-4622-a72e-12295b53f1fc (search) result_as_inserted differs from result_as_returned
+
+## VERIFIED: real stdio-transport MCP client connected, browsed a trace resource,
+## and pulled step 12's byte-exact reconstructed context via get_step_context.
