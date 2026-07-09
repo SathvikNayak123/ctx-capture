@@ -1,12 +1,12 @@
-# ctx-capture dogfood: deep-research agent — 2026-07-05T07:31:56.530418+00:00
-# subprocess: C:\Program Files\Python313\python.exe -m ctx_capture.mcp --db C:\Users\user\Desktop\ctx-capture\scratch_dogfood.db  (real stdio transport)
-# trace_id: 2de8e309-3a82-4e9f-bc59-c8bc75e5eb7e
+# ctx-capture dogfood: deep-research agent — 2026-07-09T11:27:26.982590+00:00
+# subprocess: C:\Users\user\Desktop\ctx-capture\.auditvenv\Scripts\python.exe -m ctx_capture.mcp --db C:\Users\user\Desktop\ctx-capture\scratch_dogfood.db  (real stdio transport)
+# trace_id: 50d5e62c-fcab-47f5-9738-902192f55d17
 
 ## connect
-server: ctx-capture 1.26.0
+server: ctx-capture 0.1.0
 
 ## list_traces()
-  - 2de8e309-3a82-4e9f-bc59-c8bc75e5eb7e  agent=deep-research-agent  steps=7  tokens=970  has_anomalies=True
+  - 50d5e62c-fcab-47f5-9738-902192f55d17  agent=deep-research-agent  steps=7  tokens=970  has_anomalies=True
 
 ## get_token_accounting(trace_id, group_by='step')
   total_prompt_tokens=770  total_completion_tokens=200
@@ -19,11 +19,11 @@ server: ctx-capture 1.26.0
     step 6: 180 tokens
 
 ## find_context_anomalies(trace_id)  — expect a real truncation + a real budget overflow
-  - step 3: truncation (high) — tool_call:53107ae6-bf82-49d0-b733-ad8fbc4c605e truncated (unknown, detected inferred)
-  - step 3: tool_result_mismatch (high) — tool_call 53107ae6-bf82-49d0-b733-ad8fbc4c605e (fetch_document) result_as_inserted differs from result_as_returned
+  - step 3: truncation (high) — tool_call:cdb4d283-0a81-40be-8588-65cd0b22e3a1 truncated (unknown, detected inferred)
+  - step 3: tool_result_mismatch (high) — tool_call cdb4d283-0a81-40be-8588-65cd0b22e3a1 (fetch_document) result_as_inserted differs from result_as_returned
   - step 5: budget_overflow (high) — completion hit max_tokens budget (40/30 tokens)
 
-## browse: read_resource(trace://2de8e309-3a82-4e9f-bc59-c8bc75e5eb7e) — step index
+## browse: read_resource(trace://50d5e62c-fcab-47f5-9738-902192f55d17) — step index
   agent_name=deep-research-agent  step_count=7
 
 ## pull mid-run step 3's exact context: get_step_context(trace_id, step_index=3)

@@ -1,7 +1,9 @@
 # ctx-capture
 
 MCP server for context-window observability: captures and lets you query exactly what an LLM
-agent saw at every step, byte-accurately and framework-agnostically.
+agent saw at every step, byte-accurately and independent of which agent framework orchestrates
+the calls. Capture today wraps OpenAI-compatible `chat.completions`-shaped clients; it is not yet
+provider-agnostic (no Anthropic Messages API adapter) — see docs/DESIGN.md § Capture mechanism.
 
 **Read [docs/DESIGN.md](docs/DESIGN.md) first.** It is the source of truth for the schema, the
 MCP tool/resource surface, transport, storage, and non-goals. Don't re-derive design decisions
@@ -27,5 +29,7 @@ already made there — follow them or propose a change to the doc itself.
 
 ## Schema location
 
-The versioned trace/context JSON schema lives in `docs/DESIGN.md` ("The schema" section) pending
-extraction into a checked-in JSON Schema file in Session 1.
+The versioned trace/context schema is defined as pydantic models in `src/ctx_capture/schema.py`
+and exported as a checked-in JSON Schema file at `schema/v1.0.json` (regenerate with
+`python scripts/export_schema.py` after any change). `docs/DESIGN.md` ("The schema" section)
+remains the source of truth for the design rationale.
