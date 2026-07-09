@@ -201,6 +201,16 @@ Design notes:
 - `result_as_returned` vs. `result_as_inserted` is the field pair that makes truncation and
   drop detection possible at all — most tools only have one of these, which is why "was this
   truncated" today means diffing logs by hand.
+- **Tool `args_raw`/`result_as_*` are captured as their JSON representation, not as live Python
+  objects.** They persist through a JSON round-trip, so non-JSON-native types are coerced
+  deterministically (tuple/set → array, bytes → string). This is deliberate and faithful to the
+  product claim: tool arguments arrive *from* the model as JSON and results are inserted *back
+  into* the message array as JSON, so the Python-only tuple/set/bytes distinction never crosses
+  the model boundary — capturing it would record something the model never saw. The byte-exact
+  opaque-passthrough guarantee applies to the provider-native `messages`/`response` payloads,
+  which are already JSON. (True Python-type preservation, e.g. a type-tagged codec, is a possible
+  future opt-in if a use case needs the pre-serialization object graph, but it is explicitly not
+  what "byte-exact replay of what the model saw" means.)
 - `truncation_events` can be populated two ways: directly by the capture SDK when it observes a
   framework's truncation call, or inferred after the fact by diffing `result_as_returned` against
   `result_as_inserted` when the SDK didn't observe the truncation directly (`detected_by:
@@ -297,7 +307,9 @@ This is the schema's acceptance test, not a nice-to-have:
 > truncates before reinsertion (asserting `result_as_returned` ≠ `result_as_inserted` and a
 > `truncation_events` entry is recorded).
 
-This harness runs in CI as a required gate, per supported provider, before any release.
+This harness runs in CI as a required gate before any release. Today "supported provider" means
+one capture path — OpenAI-compatible `chat.completions`-shaped clients — exercised against the
+fixture matrix above; an Anthropic Messages API adapter (or others) is roadmap, not implemented.
 
 ## Non-goals
 
@@ -346,8 +358,9 @@ This harness runs in CI as a required gate, per supported provider, before any r
   request log.
 - **Fidelity claim being wrong** — a silent capture gap (a message type the SDK doesn't handle,
   a framework transform it doesn't see) would quietly break the one promise the product makes.
-  *Mitigation*: the fidelity acceptance harness above runs as a required CI gate per provider,
-  not an optional test.
+  *Mitigation*: the fidelity acceptance harness above runs as a required CI gate for the
+  currently-supported capture path, not an optional test, and grows a gate per provider as each
+  new capture path (e.g. an Anthropic adapter) ships.
 - **Vendor/provider API changes** altering message or response shapes. *Mitigation*: the schema
   treats `messages`/`response` as opaque passthrough rather than validating provider internals,
   which minimizes what can actually break when a provider changes shape.

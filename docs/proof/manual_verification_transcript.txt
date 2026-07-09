@@ -1,9 +1,9 @@
-# ctx-capture manual MCP verification — 2026-07-03T07:54:07.353913+00:00
-# subprocess: C:\Program Files\Python313\python.exe -m ctx_capture.mcp --db C:\Users\user\Desktop\ctx-capture\scratch_manual_verify.db  (real stdio transport)
-# trace_id: c3608815-adaa-4c40-b584-4dd849e09832
+# ctx-capture manual MCP verification — 2026-07-09T11:27:25.189455+00:00
+# subprocess: C:\Users\user\Desktop\ctx-capture\.auditvenv\Scripts\python.exe -m ctx_capture.mcp --db C:\Users\user\Desktop\ctx-capture\scratch_manual_verify.db  (real stdio transport)
+# trace_id: a222c56d-98da-48b3-b67f-a00ba2946f64
 
 ## connect
-server: ctx-capture 1.26.0
+server: ctx-capture 0.1.0
 
 ## list_tools (5)
   - list_traces: outputSchema=yes
@@ -16,9 +16,9 @@ server: ctx-capture 1.26.0
   - trace://{trace_id}
   - trace://{trace_id}/step/{step_index}
 
-## browse: read_resource(trace://c3608815-adaa-4c40-b584-4dd849e09832)
+## browse: read_resource(trace://a222c56d-98da-48b3-b67f-a00ba2946f64)
   agent_name=manual-verify-agent  step_count=15
-  step 12 summary: {'step_index': 12, 'step_id': 'b730764c-2de7-49b6-a52c-38a656c9ee0f', 'has_model_call': True, 'tool_call_count': 0, 'truncation_event_count': 0}
+  step 12 summary: {'step_index': 12, 'step_id': '526a65c4-4a63-4222-9734-caa552407f4d', 'has_model_call': True, 'tool_call_count': 0, 'truncation_event_count': 0}
 
 ## pull step 12's exact context: get_step_context(trace_id, step_index=12)
   isError=False
@@ -29,8 +29,8 @@ server: ctx-capture 1.26.0
   token_counts={'prompt_tokens': 32, 'completion_tokens': 5, 'total_tokens': 37, 'cache_read_tokens': 0, 'cache_write_tokens': 0}
 
 ## find_context_anomalies(trace_id)
-  - step 5: truncation (high) — tool_call:76805103-cf48-4622-a72e-12295b53f1fc truncated (unknown, detected inferred)
-  - step 5: tool_result_mismatch (high) — tool_call 76805103-cf48-4622-a72e-12295b53f1fc (search) result_as_inserted differs from result_as_returned
+  - step 5: truncation (high) — tool_call:6b147679-9421-4718-8ec5-85445f0483ab truncated (unknown, detected inferred)
+  - step 5: tool_result_mismatch (high) — tool_call 6b147679-9421-4718-8ec5-85445f0483ab (search) result_as_inserted differs from result_as_returned
 
 ## VERIFIED: real stdio-transport MCP client connected, browsed a trace resource,
 ## and pulled step 12's byte-exact reconstructed context via get_step_context.
