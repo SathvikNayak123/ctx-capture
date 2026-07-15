@@ -46,7 +46,9 @@ Format: chosen · alternatives · why · what would change my mind.
 
 - **Chosen**: SDK-first — a small Python decorator/wrapper around the model client call and
   around tool functions, capturing the actual Python objects the agent code passes, before any
-  framework serializes or truncates them.
+  framework serializes or truncates them. Two capture paths ship today: OpenAI-compatible
+  `client.chat.completions.create` and Anthropic's `client.messages.create`, both duck-typed
+  against the call shape rather than a hard dependency on either provider's SDK package.
 - **Alternatives**: (a) OTel span ingestion — consume existing GenAI OTel spans; (b) proxy the
   model API — a reverse proxy between agent and provider that captures wire bytes.
 - **Why**: the wrapper sees the tool result *before* the agent framework decides how much of it
@@ -308,8 +310,10 @@ This is the schema's acceptance test, not a nice-to-have:
 > `truncation_events` entry is recorded).
 
 This harness runs in CI as a required gate before any release. Today "supported provider" means
-one capture path — OpenAI-compatible `chat.completions`-shaped clients — exercised against the
-fixture matrix above; an Anthropic Messages API adapter (or others) is roadmap, not implemented.
+two capture paths — OpenAI-compatible `chat.completions`-shaped clients and Anthropic's Messages
+API — each exercised against the fixture matrix above (`tests/test_fidelity.py` and
+`tests/test_fidelity_anthropic.py` respectively). Additional providers/adapters remain roadmap;
+each new capture path ships with its own copy of this gate before being called "supported."
 
 ## Non-goals
 
@@ -358,9 +362,9 @@ fixture matrix above; an Anthropic Messages API adapter (or others) is roadmap, 
   request log.
 - **Fidelity claim being wrong** — a silent capture gap (a message type the SDK doesn't handle,
   a framework transform it doesn't see) would quietly break the one promise the product makes.
-  *Mitigation*: the fidelity acceptance harness above runs as a required CI gate for the
-  currently-supported capture path, not an optional test, and grows a gate per provider as each
-  new capture path (e.g. an Anthropic adapter) ships.
+  *Mitigation*: the fidelity acceptance harness above runs as a required CI gate for each
+  currently-supported capture path (OpenAI-compatible, Anthropic), not an optional test, and
+  grows a gate per provider as each new capture path ships.
 - **Vendor/provider API changes** altering message or response shapes. *Mitigation*: the schema
   treats `messages`/`response` as opaque passthrough rather than validating provider internals,
   which minimizes what can actually break when a provider changes shape.
