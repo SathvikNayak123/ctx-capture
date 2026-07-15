@@ -64,7 +64,7 @@ those two, and this is a SHIP.
 
 | # | Finding | Result | Evidence |
 |---|---|---|---|
-| A1 | Provider coverage overstated | **GAP** | CHANGELOG/DESIGN say "framework-agnostic" and the schema enumerates `provider: "anthropic \| openai"`, but **only the OpenAI-shaped `client.chat.completions.create` is wrapped**. Anthropic's Messages API (`client.messages.create`, different shape) has no capture path — despite this repo's own `CLAUDE.md` defaulting to Claude models. README line 33 ("any OpenAI-compatible client") is honest; the broader "framework/provider-agnostic" framing is not. **Fix:** scope the wording to "OpenAI-compatible chat-completions," or add an Anthropic adapter. |
+| A1 | Provider coverage overstated | **GAP** | CHANGELOG/DESIGN say "framework-agnostic" and the schema enumerates `provider: "anthropic \| openai"`, but **only the OpenAI-shaped `client.chat.completions.create` is wrapped**. Anthropic's Messages API (`client.messages.create`, different shape) has no capture path yet. README line 33 ("any OpenAI-compatible client") is honest; the broader "framework/provider-agnostic" framing is not. **Fix:** scope the wording to "OpenAI-compatible chat-completions," or add an Anthropic adapter. |
 
 ---
 
